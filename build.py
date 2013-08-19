@@ -64,13 +64,13 @@ class BuildExe:
         self.icon_file = None
  
         #Extra files/dirs copied to game
-        self.extra_datas = []
+        self.extra_datas = ["sounds"]
  
         #Extra/excludes python modules
         self.extra_modules = []
         self.exclude_modules = []
         
-        #DLL Excludes
+        #DLL Excludes"
         self.exclude_dll = ['']
         #python scripts (strings) to be included, seperated by a comma
         self.extra_scripts = []
