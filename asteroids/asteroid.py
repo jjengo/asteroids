@@ -2,8 +2,8 @@
 
 import math
 from random import randint, random
-from .sprite import Sprite, Point
-from .util import ScreenSize
+from .sprite import Sprite
+from .util import Point, ScreenSize
 
 class Asteroid(Sprite):
     

@@ -3,26 +3,9 @@
 import math
 import pygame
 from random import random
-from . import util
+from . import util 
+from util import Point
 
-# Represents a [x,y] coordinate
-class Point:
-    
-    # Initialize
-    def __init__(self, x, y):
-        self.x = x;
-        self.y = y
-
-    # Move coords to x,y
-    def move(self, x, y):
-        self.x = x;
-        self.y = y
-        
-    # Move coords by dx,dy
-    def translate(self, dx, dy):
-        self.x += dx
-        self.y += dy
-        
 # A sprite composed of connected vertices
 class Sprite:
     

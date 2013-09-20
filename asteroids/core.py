@@ -10,8 +10,9 @@ from .ship import Ship, Bullet
 from .asteroid import Asteroid
 from .saucer import Saucer
 from .particle import Particles
+from .star import Star
 from .sound import Mixer
-from .util import Keys, ScreenSize
+from .util import Keys, Dimension, Rectangle, ScreenSize
         
 # Core engine
 class Core:
@@ -136,6 +137,7 @@ class Asteroids:
         self.asteroids = []
         self.saucers = []
         self.explosions = []
+        self.stars = []
         self.timeToLevel = 0
         self.saucerElapsed = 0
         
@@ -207,6 +209,10 @@ class Asteroids:
         for explosion in self.explosions:
             explosion.update()
             
+        # Update stars.
+        for star in self.stars:
+            star.update()
+            
         # Check for earned extra life        
         if self.stats.earnedLife():
             self.stats.extras += 1
@@ -230,7 +236,7 @@ class Asteroids:
         self.particles.render(gfx)
         if self.ship.alive:
             self.ship.render(gfx)
-        for sprite in self.bullets + self.asteroids + self.saucers + self.explosions:
+        for sprite in self.bullets + self.asteroids + self.saucers + self.explosions + self.stars:
             sprite.render(gfx)
 
     # Check sprite collisions
@@ -277,6 +283,17 @@ class Asteroids:
         for saucer in self.saucers:
             if self.ship.alive and saucer.collision(self.ship):
                 self.shipDestroyed()
+                
+        # Star collisions.
+        for star in self.stars:
+            star.alive = True
+            for sprite in self.asteroids + self.saucers:
+                if star.collision(sprite):
+                    star.alive = False
+                    break
+            else:
+                if star.collision(self.ship):
+                    star.alive = False
 
     # Fire a bullet in the direction the ship is pointing
     def fireShipBullet(self):
@@ -347,6 +364,14 @@ class Asteroids:
     
     # Start a new game
     def newGame(self):
+        
+        self.stars = []
+        sec = Dimension(ScreenSize[0] / 8, ScreenSize[1] / 5)
+        for x in range(8):
+            for y in range(5):
+                bounds = Rectangle(x * sec.width, y * sec.height, sec.width, sec.height)
+                self.stars.append(Star(bounds))
+        
         self.stats = Statistics()
         self.asteroids = []
         self.saucers = []
