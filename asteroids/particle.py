@@ -60,10 +60,7 @@ class Particle:
         
         self.pos.x += self.vel.x
         self.pos.y += self.vel.y
-        self.color[0] -= self.fade
-        self.color[1] -= self.fade
-        self.color[2] -= self.fade
-        
+        self.color = [col - self.fade for col in self.color]
         if self.color[0] < 0:
             self.alive = False
     

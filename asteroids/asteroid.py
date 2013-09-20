@@ -24,7 +24,7 @@ class Asteroid(Sprite):
     def initShape(self):
 
         sides = randint(8, 12)
-        pts = []
+        xpts, ypts = [], []
         
         # Create vertices with random edges and angles
         for i in range(sides):
@@ -34,15 +34,13 @@ class Asteroid(Sprite):
                 sidelen /= 2
             elif self.size == Asteroid.Small:
                 sidelen /= 4
-                
+            
             theta = 2.0 * math.pi / sides * i
-            pt = [-round(sidelen * math.sin(theta)), round(sidelen * math.cos(theta))]
-            pts.append(Point(pt[0], pt[1]))
-            
-        # Connect to starting point
-        pts.append(pts[0])
-        self.setPoints(pts)
-            
+            xpts.append(-round(sidelen * math.sin(theta)))
+            ypts.append(round(sidelen * math.cos(theta)))
+        
+        self.setPoints(xpts, ypts, True)
+
     # Generate random motion
     def initMotion(self):
         

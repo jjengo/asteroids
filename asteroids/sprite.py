@@ -22,11 +22,12 @@ class Sprite:
         self.wrap = Point(True, True)
         
     # Set points and calculate radius
-    def setPoints(self, pts):
+    def setPoints(self, xpts, ypts, connect=False):
         
-        self.orig = []
-        self.orig.extend(pts)
-            
+        self.orig = [Point(x, y) for x, y in zip(xpts, ypts)]
+        if connect:
+            self.orig.append(self.orig[0])
+
         # Calculate bounding circle radius
         for pt in self.orig:
             dist = math.sqrt((pt.x ** 2) + (pt.y ** 2))
@@ -43,8 +44,9 @@ class Sprite:
         
     # Scale points to a size [0.0 - 1.0]
     def scale(self, ratio):
-        pts = [Point(pt.x * ratio, pt.y * ratio) for pt in self.orig]
-        self.setPoints(pts)
+        xpts = [pt.x * ratio for pt in self.orig]
+        ypts = [pt.y * ratio for pt in self.orig]
+        self.setPoints(xpts, ypts)
             
     # Rotate angle by dt
     def rotate(self, dt):
@@ -165,10 +167,7 @@ class Explosion:
         
         for side in self.sides:
             side.update()
-        
-        self.color[0] -= self.fade
-        self.color[1] -= self.fade
-        self.color[2] -= self.fade
+        self.color = [col - self.fade for col in self.color]
         if self.color[0] <= 0:
             self.alive = False
             

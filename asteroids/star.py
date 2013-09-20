@@ -14,30 +14,32 @@ class Star(Sprite):
         self.pos.y = randint(bounds.pos.y, bounds.pos.y + bounds.size.height - 1)
         self.color =[255, 255, 255]
         self.fade = 10
-        self.timeToFade = randint(25, 500)
+        self.timeToFade = randint(25, 250)
         self.initShape()
     
     # Initialize the shape    
     def initShape(self):
-        pts = [Point(x, y) for x, y in zip([0, 0, 1, 1, 0], [0, 1, 1, 0, 0])]
-        self.setPoints(pts)
-        
+        xpts = [0, 0, 1, 1]
+        ypts = [0, 1, 1, 0]
+        self.setPoints(xpts, ypts, True)
+
     # Update all values
     def update(self):
+        
         Sprite.update(self)
+        
         if self.timeToFade:
             self.timeToFade -= 1
         else:
-            col = self.color[0] - self.fade
-            if col >= 255:
-                self.timeToFade = randint(25, 100)
-                col = 255
-            elif col <= 0:
-                col = 0
-            if not col or col == 255:
+            self.color = [col - self.fade for col in self.color]
+            if self.color[0] >= 255:
+                self.timeToFade = randint(25, 250)
+                self.color = [255, 255, 255]
                 self.fade *= -1
-            self.color = [col, col, col]
-            
+            elif self.color[0] <= 0:
+                self.color = [0, 0, 0]
+                self.fade *= -1
+
     # Render the fading star
     def render(self, gfx):
         if self.alive:

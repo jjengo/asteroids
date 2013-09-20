@@ -25,19 +25,9 @@ class Saucer(Sprite):
         
     # Generate the suacer shape
     def initShape(self):
-        
-        pts = []
-        pts.append(Point(-4, -9))
-        pts.append(Point(4, -9))
-        pts.append(Point(7, -3))
-        pts.append(Point(15, 3))
-        pts.append(Point(8, 9))
-        pts.append(Point(-8, 9))
-        pts.append(Point(-15, 3))
-        pts.append(Point(-7, -3))
-        pts.append(pts[0])
-        self.setPoints(pts)
-        
+        xpts = [-4, 4, 7, 15, 8, -8, -15, -7]
+        ypts = [-9, -9, -3, 3, 9, 9, 3, -3]
+        self.setPoints(xpts, ypts, True)
         if self.size == Saucer.Small:
             self.scale(0.6)
         

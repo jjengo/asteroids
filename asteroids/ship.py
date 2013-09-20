@@ -17,13 +17,10 @@ class Ship(Sprite):
         
     # Initialize the ship shape
     def initShape(self):
-        pts = []
-        pts.append(Point(0, -10))
-        pts.append(Point(-7, 10))
-        pts.append(Point(7, 10))
-        pts.append(pts[0])
-        self.setPoints(pts)
-
+        xpts = [0, -7, 7]
+        ypts = [-10, 10, 10]
+        self.setPoints(xpts, ypts, True)
+        
     # Update all the values
     def update(self):
         
@@ -111,14 +108,10 @@ class Bullet(Sprite):
         
     # Initialize the shape
     def initShape(self):
-        pts = []
-        pts.append(Point(0, 0))
-        pts.append(Point(0, 1))
-        pts.append(Point(1, 1))
-        pts.append(Point(1, 0))
-        pts.append(pts[0])
-        self.setPoints(pts)
-    
+        xpts = [0, 0, 1, 1]
+        ypts = [0, 1, 1, 0]
+        self.setPoints(xpts, ypts, True)
+
     # Update all values
     def update(self):
         Sprite.update(self)
