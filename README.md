@@ -14,13 +14,6 @@ Python 2.7
 
 Pygame 1.9 (compatible with Python 2.7)
 
-### How to play
-
-1. Download the Asteroids [distribution](https://www.dropbox.com/s/acrswbhxe7byj7u/asteroids.zip)
-2. Unzip the contents on your local machine
-3. Open the 'asteroids' folder
-4. Run asteroids.exe
-
 ### License
 
 Copyright (c) 2013 Jonathan Jengo
