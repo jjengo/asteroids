@@ -1,20 +1,15 @@
-# Author: Jonathan Jengo
-
 import math
 import pygame
-from random import random
-from . import util 
-from util import Point
+from random import random 
+from asteroids.util import Point, wrap_x, wrap_y
 
-# A sprite composed of connected vertices
-class Sprite:
+class Sprite(object):
     
-    # Initialize
     def __init__(self):
         self.pos = Point(0.0, 0.0)
         self.vel = Point(0.0, 0.0)
         self.theta = 0.0
-        self.thetaVel = 0.0
+        self.theta_vel = 0.0
         self.radius = 0.0
         self.orig = []
         self.pts = []
@@ -22,7 +17,7 @@ class Sprite:
         self.wrap = Point(True, True)
         
     # Set points and calculate radius
-    def setPoints(self, xpts, ypts, connect=False):
+    def set_points(self, xpts, ypts, connect=False):
         
         self.orig = [Point(x, y) for x, y in zip(xpts, ypts)]
         if connect:
@@ -46,7 +41,7 @@ class Sprite:
     def scale(self, ratio):
         xpts = [pt.x * ratio for pt in self.orig]
         ypts = [pt.y * ratio for pt in self.orig]
-        self.setPoints(xpts, ypts)
+        self.set_points(xpts, ypts)
             
     # Rotate angle by dt
     def rotate(self, dt):
@@ -57,7 +52,7 @@ class Sprite:
             self.theta -= 2.0 * math.pi
             
     # Return if vertices create a closed polygon
-    def isPolygon(self):
+    def is_polygon(self):
         if len(self.pts) > 1:
             return self.pts[0].x == self.pts[-1].x and self.pts[0].y == self.pts[-1].y
         else:
@@ -90,7 +85,7 @@ class Sprite:
     def collision(self, sprite):
         
         # Only polygons can collide
-        if not self.isPolygon() or not sprite.isPolygon():
+        if not self.is_polygon() or not sprite.is_polygon():
             return False
     
         # Only check if in close proximity
@@ -110,7 +105,7 @@ class Sprite:
         return False
 
     # Use pythagorean theorem to check proximmity distance
-    def proximity(self, s, dist = 55):
+    def proximity(self, s, dist=55):
         a2 = (s.pos.x - self.pos.x) ** 2
         b2 = (s.pos.y - self.pos.y) ** 2
         return math.sqrt(a2 + b2) < dist
@@ -123,13 +118,13 @@ class Sprite:
         self.pos.y += self.vel.y
         
         # Update angle based on velocity
-        self.rotate(self.thetaVel)
+        self.rotate(self.theta_vel)
         
         # Wrap position within screen bounds
         if self.wrap.x:
-            self.pos.x = util.wrapX(self.pos.x, self)
+            self.pos.x = wrap_x(self)
         if self.wrap.y:
-            self.pos.y = util.wrapY(self.pos.y, self)
+            self.pos.y = wrap_y(self)
         
         # Update vertices based on pos and angle
         self.pts = []
@@ -139,14 +134,12 @@ class Sprite:
             self.pts.append(Point(newx, newy))
             
     # Draw to the display
-    def render(self, gfx, color = [255, 255, 255]):
+    def render(self, gfx, color=[255, 255, 255]):
         for start, end in zip(self.pts[:-1], self.pts[1:]):
             pygame.draw.aaline(gfx, color, (start.x, start.y), (end.x, end.y), 1)
         
-# A sprite explosion composed of sprite edges
-class Explosion:
+class Explosion(object):
     
-    # Initialize
     def __init__(self, sprite):
     
         self.color = [255, 255, 255]
@@ -175,4 +168,3 @@ class Explosion:
     def render(self, gfx):
         for side in self.sides:
             side.render(gfx, self.color)
-             

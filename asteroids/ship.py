@@ -1,27 +1,26 @@
-# Author: Jonathan Jengo
-
 import math
-from .sprite import Sprite, Point
+from asteroids.sprite import Sprite
+from asteroids.util import Point
 
-# The user spaceship
 class Ship(Sprite):
     
-    # Initialize
     def __init__(self):
         Sprite.__init__(self)
         self.speed = 0.27
         self.decay = 0.98
         self.pos = Point(350, 200)
-        self.timeToRespawn = 0
-        self.initShape()
+        self.time_to_respawn = 0
+        self.init_shape()
         
-    # Initialize the ship shape
-    def initShape(self):
+    @property
+    def front(self):
+        return self.pts[0]
+    
+    def init_shape(self):
         xpts = [0, -7, 7]
         ypts = [-10, 10, 10]
-        self.setPoints(xpts, ypts, True)
+        self.set_points(xpts, ypts, True)
         
-    # Update all the values
     def update(self):
         
         Sprite.update(self)
@@ -29,35 +28,31 @@ class Ship(Sprite):
         self.vel.y *= self.decay
         
         # Countdown to respawn
-        if self.timeToRespawn > 0:
-            self.timeToRespawn -= 1
-            if self.timeToRespawn == 0:
+        if self.time_to_respawn > 0:
+            self.time_to_respawn -= 1
+            if self.time_to_respawn == 0:
                 self.alive = True
     
     # Move in the direction pointed
-    def forwardThrust(self):
+    def forward_thrust(self):
         self.vel.x += math.sin(self.theta) * self.speed
         self.vel.y -= math.cos(self.theta) * self.speed
         
     # Reverse in the direction pointed
-    def backwardThrust(self):
+    def backward_thrust(self):
         self.vel.x -= math.sin(self.theta) * self.speed
         self.vel.y += math.cos(self.theta) * self.speed
         
     # Rotate clockwise
-    def rotateRight(self):
+    def rotate_right(self):
         self.rotate(math.pi / 18.0)
 
     # Rotate counter clockwise
-    def rotateLeft(self):
+    def rotate_left(self):
         self.rotate(-math.pi / 18.0)
         
-    # Return the front tip of the ship
-    def getFront(self):
-        return self.pts[0]
-
     # Return a list of ranges for the vapor bounds
-    def getVaporBoundsRange(self):
+    def vapor_bounds_range(self):
 
         bounds = []
         size = int(abs(self.vel.x) + abs(self.vel.y))
@@ -80,21 +75,19 @@ class Ship(Sprite):
         return bounds
     
     # Fire a directed bullet
-    def fireBullet(self):
-        bullet = Bullet(self.pts[0].x, self.pts[0].y, self.theta)
-        bullet.fromShip = True
+    def fire_bullet(self):
+        bullet = Bullet(self.front.x, self.front.y, self.theta)
+        bullet.from_ship = True
         return bullet
     
     # Start respawn process
     def respawn(self):
-        self.timeToRespawn = 100
+        self.time_to_respawn = 100
         self.pos = Point(350, 200)
         self.vel = Point(0, 0)
         
-# Bullet fired from the spaceship
 class Bullet(Sprite):
     
-    #Initialize
     def __init__(self, x, y, theta):
         Sprite.__init__(self)
         self.pos.x = x
@@ -102,20 +95,20 @@ class Bullet(Sprite):
         self.theta = theta
         self.vel.x = math.sin(theta) * 10.0
         self.vel.y = -math.cos(theta) * 10.0
-        self.timeToLive = 30
-        self.fromShip = False
-        self.initShape()
+        self.time_to_live = 30
+        self.from_ship = False
+        self.init_shape()
         
     # Initialize the shape
-    def initShape(self):
+    def init_shape(self):
         xpts = [0, 0, 1, 1]
         ypts = [0, 1, 1, 0]
-        self.setPoints(xpts, ypts, True)
+        self.set_points(xpts, ypts, True)
 
     # Update all values
     def update(self):
         Sprite.update(self)
-        self.timeToLive -= 1
-        if self.timeToLive <= 0:
+        self.time_to_live -= 1
+        if self.time_to_live <= 0:
             self.alive = False
         

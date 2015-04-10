@@ -1,17 +1,12 @@
-# Author: Jonathan Jengo
-
-import pygame._view
 import os
-import sys
 import pygame
 from asteroids.core import Core
 from asteroids.util import ScreenSize
 
-# Initialize
 os.environ['SDL_VIDEO_CENTERED'] = '1'
 pygame.mixer.pre_init(44100, -16, 2, 4096)
 pygame.init()
-gfx = pygame.display.set_mode(ScreenSize)
+gfx = pygame.display.set_mode(ScreenSize.tuple())
 pygame.display.set_caption('Asteroids')
 
 # Start asteroids game

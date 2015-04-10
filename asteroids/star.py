@@ -1,39 +1,32 @@
-#!/usr/bin/env python3
-
 from random import randint
-from .sprite import Sprite, Point
-from .util import ScreenSize
+from asteroids.sprite import Sprite
 
-# A flickering star
 class Star(Sprite):
     
-    # Initialize
     def __init__(self, bounds):
         Sprite.__init__(self)
         self.pos.x = randint(bounds.pos.x, bounds.pos.x + bounds.size.width - 1)
         self.pos.y = randint(bounds.pos.y, bounds.pos.y + bounds.size.height - 1)
-        self.color =[255, 255, 255]
+        self.color = [255, 255, 255]
         self.fade = 10
-        self.timeToFade = randint(25, 250)
-        self.initShape()
-    
-    # Initialize the shape    
-    def initShape(self):
+        self.time_to_fade = randint(25, 250)
+        self.init_shape()
+      
+    def init_shape(self):
         xpts = [0, 0, 1, 1]
         ypts = [0, 1, 1, 0]
-        self.setPoints(xpts, ypts, True)
+        self.set_points(xpts, ypts, True)
 
-    # Update all values
     def update(self):
         
         Sprite.update(self)
         
-        if self.timeToFade:
-            self.timeToFade -= 1
+        if self.time_to_fade:
+            self.time_to_fade -= 1
         else:
             self.color = [col - self.fade for col in self.color]
             if self.color[0] >= 255:
-                self.timeToFade = randint(25, 250)
+                self.time_to_fade = randint(25, 250)
                 self.color = [255, 255, 255]
                 self.fade *= -1
             elif self.color[0] <= 0:
@@ -47,8 +40,7 @@ class Star(Sprite):
             
     # More efficient collision detection by only checking origin point.
     def collision(self, sprite):
-        if not sprite.isPolygon() or not self.proximity(sprite):
+        if not sprite.is_polygon() or not self.proximity(sprite):
             return False
         else:
             return sprite.contains(self.pts[0])
-    

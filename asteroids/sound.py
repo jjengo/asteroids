@@ -1,128 +1,109 @@
-# Author: Jonathan Jengo
-
 import os
 import pygame
-from .asteroid import Asteroid
-from .saucer import Saucer
-
-# Various sounds
-SmallBang, MediumBang, LargeBang, Extra, Fire, LargeSaucer, SmallSaucer, Thrust, Music = range(9)
+from asteroids.asteroid import Asteroid
+from asteroids.saucer import Saucer
 
 # Load a sound from the file system
 def load(filename):
     return pygame.mixer.Sound(os.path.join("sounds", filename))
 
-# Sound mixer
-class Mixer:
-    
-    # Initialize
+class Sound(object):
+    def __init__(self, filename):
+        self.sound = load(filename)
+        self.looping = False
+    def play(self, loops=0):
+        self.sound.play(loops)
+    def loop(self):
+        if not self.looping:
+            self.sound.play(-1)
+            self.looping = True
+    def stop(self):
+        self.sound.stop()
+        self.looping = False
+
+class Mixer(object):
+
     def __init__(self):
-        self.sounds = {}
-        self.sounds[SmallBang] = load("bangSmall.wav")
-        self.sounds[MediumBang] = load("bangMedium.wav")
-        self.sounds[LargeBang] = load("bangLarge.wav")
-        self.sounds[Extra] = load("extraShip.wav")
-        self.sounds[Fire] = load("fire.wav")
-        self.sounds[LargeSaucer] = load("saucerBig.wav")
-        self.sounds[SmallSaucer] = load("saucerSmall.wav")
-        self.sounds[Thrust] = load("thrust.wav")
-        self.sounds[Music] = Music()
-        self.looping = {}
+        self.small_bang = Sound('bangSmall.wav')
+        self.medium_bang = Sound('bangMedium.wav')
+        self.large_bang = Sound('bangLarge.wav')
+        self.extra = Sound('extraShip.wav')
+        self.fire = Sound('fire.wav')
+        self.large_saucer = Sound('saucerBig.wav')
+        self.small_saucer = Sound('saucerSmall.wav')
+        self.thrust = Sound('thrust.wav')
+        self.music = Music()
 
-    # Play a sound
-    def play(self, key, loops = 0):
-        if loops == -1:
-            self.loop(key)
-        else:
-            self.sounds[key].play(loops)
-            
-    # Play a looping sound
-    def loop(self, key):
-        if not key in self.looping or not self.looping[key]:
-            self.sounds[key].play(-1)
-            self.looping[key] = True
-
-    # Stop playing a sound
-    def stop(self, key):
-        self.sounds[key].stop()
-        if key in self.looping:
-            self.looping[key] = False
-                        
-    # Def update any custom sounds
     def update(self):
-        self.sounds[Music].update()
+        self.music.update()
             
-    # Pause all playback of sounds
     def pause(self):
         pygame.mixer.pause()
         
-    # Resume all playback of sounds
     def unpause(self):
         pygame.mixer.unpause()
             
-    # Stop playback of all sounds
     def stopall(self):
-        self.sounds[Music].stop()
-        for key in self.looping:
-            self.sounds[key].stop()
-            self.looping[key] = False
+        self.small_bang.stop()
+        self.medium_bang.stop()
+        self.large_bang.stop()
+        self.extra.stop()
+        self.fire.stop()
+        self.large_saucer.stop()
+        self.small_saucer.stop()
+        self.thrust.stop()
+        self.music.stop()
         
     # Play bang sound for asteroid
-    def playAsteroidBang(self, asteroid):
-        if asteroid.size == Asteroid.Large:
-            self.play(LargeBang)
-        elif asteroid.size == Asteroid.Medium:
-            self.play(MediumBang)
-        else:
-            self.play(SmallBang)
+    def play_asteroid_bang(self, asteroid):
+        sounds = {
+            Asteroid.Large: self.large_bang,
+            Asteroid.Medium: self.medium_bang,
+            Asteroid.Small: self.small_bang
+        }
+        sounds.get(asteroid.size).play()
     
     # Play bang sound for saucer
-    def playSaucerBang(self, saucer):
-        if saucer.size == Saucer.Large:
-            self.play(MediumBang)
-        else:
-            self.play(SmallBang)
+    def play_saucer_bang(self, saucer):
+        sounds = {
+            Saucer.Large: self.medium_bang,
+            Saucer.Small: self.small_bang
+        }
+        sounds.get(saucer.size).play()
         
-    # Loop sound for live saucer
-    def loopLiveSaucer(self, saucer):
-        if saucer.size == Saucer.Large:
-            self.loop(LargeSaucer)
-        else:
-            self.loop(SmallSaucer)
-
     # Stop sound for saucer
-    def stopLiveSaucer(self, saucer):
-        if saucer.size == Saucer.Large:
-            self.stop(LargeSaucer)
-        else:
-            self.stop(SmallSaucer)
+    def stop_live_saucer(self, saucer):
+        sounds = {
+            Saucer.Large: self.large_saucer,
+            Saucer.Small: self.small_saucer
+        }
+        sounds.get(saucer.size).stop()
         
 # Background music
-class Music:
+class Music(object):
     
     FlipStart = 35.0
     FlipMin = 9.0
     BeatDecay = 0.4
     
-    # Initialize
     def __init__(self):
         self.beats = []
         self.beats.append(load("beat1.wav"))
         self.beats.append(load("beat2.wav"))
         self.curr = 0
-        self.flipTime = self.FlipStart
-        self.timeToFlip = 2
+        self.flip_time = self.FlipStart
+        self.time_to_flip = 2
         self.playing = False
         
     # Loop music in alternating tones
-    def play(self, loops):
+    def play(self):
         if not self.playing:
-            self.flipTime = self.FlipStart
-            self.timeToFlip = 2
+            self.flip_time = self.FlipStart
+            self.time_to_flip = 2
             self.playing = True
             
     # Def play current beat
-    def playbeat(self):
+    def play_beat(self):
         self.beats[self.curr].play(0)
         self.curr += 1
         if self.curr > 1:
@@ -135,10 +116,10 @@ class Music:
     # Update music beat
     def update(self):
         if self.playing:
-            self.timeToFlip -= 1
-            if self.timeToFlip <= 0:
-                if (self.flipTime > self.FlipMin):
-                    self.flipTime -= self.BeatDecay
-                self.timeToFlip = self.flipTime
-                self.playbeat()
+            self.time_to_flip -= 1
+            if self.time_to_flip <= 0:
+                if self.flip_time > self.FlipMin:
+                    self.flip_time -= self.BeatDecay
+                self.time_to_flip = self.flip_time
+                self.play_beat()
     

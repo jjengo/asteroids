@@ -1,33 +1,30 @@
-# Author: Jonathan Jengo
-
 import math
 from random import randint, random
-from .sprite import Sprite
-from .util import Point, ScreenSize
+from asteroids.sprite import Sprite
+from asteroids.util import Point, ScreenSize
 
 class Asteroid(Sprite):
     
     # Various sizes
-    Small, Medium, Large = range(3)
+    Small, Medium, Large = xrange(3)
     
-    # Initialize
-    def __init__(self, size = Large):
+    def __init__(self, size=Large):
         Sprite.__init__(self)
-        self.thetaVel = 0.0
+        self.theta_vel = 0.0
         self.speed = 0.35
         self.size = size
-        self.initShape()
-        self.initMotion()
-        self.initEdge()
+        self.init_shape()
+        self.init_motion()
+        self.init_edge()
     
     # Generate a randomized shape
-    def initShape(self):
+    def init_shape(self):
 
         sides = randint(8, 12)
         xpts, ypts = [], []
         
         # Create vertices with random edges and angles
-        for i in range(sides):
+        for i in xrange(sides):
             
             sidelen = (random() * 20.0 + 15) + 12
             if self.size == Asteroid.Medium:
@@ -39,12 +36,12 @@ class Asteroid(Sprite):
             xpts.append(-round(sidelen * math.sin(theta)))
             ypts.append(round(sidelen * math.cos(theta)))
         
-        self.setPoints(xpts, ypts, True)
+        self.set_points(xpts, ypts, True)
 
     # Generate random motion
-    def initMotion(self):
+    def init_motion(self):
         
-        self.thetaVel = ((random() - 0.5) / 10.0) * self.speed
+        self.theta_vel = ((random() - 0.5) / 10.0) * self.speed
         self.vel.x = random() * randint(2, 4) * self.speed
         self.vel.y = random() * randint(2, 4) * self.speed
         
@@ -54,18 +51,18 @@ class Asteroid(Sprite):
             self.vel.y = -self.vel.y
             
     # Generate random edge location
-    def initEdge(self):
+    def init_edge(self):
         
         side = randint(0, 3)
         
         if side == 0:
-            self.pos = Point(25, random() * ScreenSize[1])
+            self.pos = Point(25, random() * ScreenSize.height)
         elif side == 1:
-            self.pos = Point(ScreenSize[0] - 25, random() * ScreenSize[1])
+            self.pos = Point(ScreenSize.width - 25, random() * ScreenSize.height)
         elif side == 2:
-            self.pos = Point(random() * ScreenSize[0], 25)
+            self.pos = Point(random() * ScreenSize.width, 25)
         else:
-            self.pos = Point(random() * ScreenSize[0], ScreenSize[1] - 25)
+            self.pos = Point(random() * ScreenSize.width, ScreenSize.height - 25)
 
     # Split off into smaller asteroids
     def split(self):
@@ -73,7 +70,7 @@ class Asteroid(Sprite):
         pieces = []
         
         if self.size != Asteroid.Small:
-            for i in range(3):
+            for i in xrange(3):
                 a = Asteroid(self.size - 1)
                 a.pos.x = self.pos.x
                 a.pos.y = self.pos.y
@@ -84,7 +81,7 @@ class Asteroid(Sprite):
         return pieces
     
     # Destroyed score value
-    def scoreValue(self):
+    def score_value(self):
         if self.size == Asteroid.Small:
             return 100
         elif self.size == Asteroid.Medium:
